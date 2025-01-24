@@ -17,6 +17,8 @@ export default function Home() {
     setPackages(newPackages);
   };
 
+  const [form] = Form.useForm();
+
   const onFinish = async (values: unknown) => {
     const orderData = {
       ...values,
@@ -24,15 +26,17 @@ export default function Home() {
         length: pkg.length,
         height: pkg.height,
         width: pkg.width,
+        size: pkg.size,
         content: pkg.content,
       })),
       date: values.date.format(), 
     };
 
     // limpiar inputs
-    setPackages(packages.map((pkg) => ({...pkg, length: "", height: "", width: "", content: "" })));
+    setPackages(packages.map((pkg) => ({...pkg, length: "", height: "", width: "", content: "", size: "" })));
     
-    
+      // Limpiar el formulario
+      form.resetFields();
 
     // enviar mensaje de confirmacion
     alert("Orden creada con éxito!");
@@ -59,15 +63,18 @@ export default function Home() {
       </h3>
       <br />
       <div className="flex items-center justify-center ">
-        <Col span={12}>
+        <Col span={15}>
           <Card bordered={false}>
           <Form
+              form={form}
               name="orderForm"
               layout="vertical"
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
             >
               {/* Campos de entrada del formulario */}
+              <Row gutter={16}>
+              <Col span={17}>
               <Form.Item
                 label="Nombre"
                 name="firstName"
@@ -75,7 +82,9 @@ export default function Home() {
               >
                 <Input placeholder="Escribe el nombre" />
               </Form.Item>
+              </Col>
 
+              <Col span={7}>
               <Form.Item
                 label="Apellido"
                 name="lastName"
@@ -83,6 +92,8 @@ export default function Home() {
               >
                 <Input placeholder="Escribe el apellido" />
               </Form.Item>
+              </Col>
+              </Row>
 
               <Form.Item
                 label="Correo Electrónico"
@@ -165,7 +176,7 @@ export default function Home() {
               {packages.map((pkg, index) => (
             <div key={index} style={{ marginBottom: "16px" }}>
               <Row gutter={16}>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Largo" required>
                     <InputNumber
                       value={pkg.length}
@@ -179,7 +190,7 @@ export default function Home() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Alto" required>
                     <InputNumber
                       value={pkg.height}
@@ -193,7 +204,7 @@ export default function Home() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Ancho" required>
                     <InputNumber
                       value={pkg.width}
@@ -207,7 +218,21 @@ export default function Home() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={9}>
+                <Col span={4}>
+                  <Form.Item label="Peso" required>
+                    <InputNumber
+                      value={pkg.size}
+                      onChange={(value) => {
+                        const updatedPackages = [...packages];
+                        updatedPackages[index].size = value;
+                        setPackages(updatedPackages);
+                      }}
+                      min={1}
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={7}>
                   <Form.Item label="Contenido" required>
                     <Input
                       value={pkg.content}
