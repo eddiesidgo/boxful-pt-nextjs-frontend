@@ -3,7 +3,6 @@
 import { Button, Card, Col, DatePicker, Form, Input, InputNumber, Row } from "antd";
 import axios from "axios";
 import { useState } from "react";
-import moment from "moment";
 
 
 export default function Home() {
@@ -19,7 +18,6 @@ export default function Home() {
   };
 
   const onFinish = async (values: unknown) => {
-    // Incluir los paquetes en los datos a enviar
     const orderData = {
       ...values,
       packages: packages.map((pkg) => ({
@@ -28,8 +26,16 @@ export default function Home() {
         width: pkg.width,
         content: pkg.content,
       })),
-      date: values.date.format(), // Convertir la fecha al formato ISO 8601
+      date: values.date.format(), 
     };
+
+    // limpiar inputs
+    setPackages(packages.map((pkg) => ({...pkg, length: "", height: "", width: "", content: "" })));
+    
+    
+
+    // enviar mensaje de confirmacion
+    alert("Orden creada con éxito!");
 
     try {
       // Enviar la solicitud a la API de NestJS
@@ -149,96 +155,80 @@ export default function Home() {
               >
                 <DatePicker
                   format="YYYY-MM-DD"
-                  defaultValue={moment("2025-01-23", "YYYY-MM-DD")}
+                  // defaultValue={moment("2025-01-23", "YYYY-MM-DD")}
                   style={{ width: "100%" }}
                 />
               </Form.Item>
 
               {/* Aquí agregamos los paquetes dinámicos */}
               <Form.Item label="Paquetes">
-                {packages.map((pkg, index) => (
-                  <div key={index} style={{ marginBottom: "16px" }}>
-                    <Row gutter={16}>
-                      <Col span={5}>
-                        <Form.Item
-                          label="Largo"
-                          name={["packages", index, "length"]}
-                          rules={[{ required: true, message: "Por favor, ingresa el largo del paquete" }]}
-                        >
-                          <InputNumber
-                            value={pkg.length}
-                            onChange={(value) => {
-                              const updatedPackages = [...packages];
-                              updatedPackages[index].length = value;
-                              setPackages(updatedPackages);
-                            }}
-                            min={1}
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={5}>
-                        <Form.Item
-                          label="Alto"
-                          name={["packages", index, "height"]}
-                          rules={[{ required: true, message: "Por favor, ingresa el alto del paquete" }]}
-                        >
-                          <InputNumber
-                            value={pkg.height}
-                            onChange={(value) => {
-                              const updatedPackages = [...packages];
-                              updatedPackages[index].height = value;
-                              setPackages(updatedPackages);
-                            }}
-                            min={1}
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={5}>
-                        <Form.Item
-                          label="Ancho"
-                          name={["packages", index, "width"]}
-                          rules={[{ required: true, message: "Por favor, ingresa el ancho del paquete" }]}
-                        >
-                          <InputNumber
-                            value={pkg.width}
-                            onChange={(value) => {
-                              const updatedPackages = [...packages];
-                              updatedPackages[index].width = value;
-                              setPackages(updatedPackages);
-                            }}
-                            min={1}
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={9}>
-                        <Form.Item
-                          label="Contenido"
-                          name={["packages", index, "content"]}
-                          rules={[{ required: true, message: "Por favor, ingresa el contenido del paquete" }]}
-                        >
-                          <Input
-                            value={pkg.content}
-                            onChange={(e) => {
-                              const updatedPackages = [...packages];
-                              updatedPackages[index].content = e.target.value;
-                              setPackages(updatedPackages);
-                            }}
-                            placeholder="Contenido"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Button danger onClick={() => removePackage(index)} style={{ marginTop: "8px" }}>
-                      Eliminar Paquete
-                    </Button>
-                  </div>
-                ))}
-                <Button type="dashed" onClick={addPackage} style={{ width: "100%" }}>
-                  Añadir Paquete
-                </Button>
+              {packages.map((pkg, index) => (
+            <div key={index} style={{ marginBottom: "16px" }}>
+              <Row gutter={16}>
+                <Col span={5}>
+                  <Form.Item label="Largo" required>
+                    <InputNumber
+                      value={pkg.length}
+                      onChange={(value) => {
+                        const updatedPackages = [...packages];
+                        updatedPackages[index].length = value;
+                        setPackages(updatedPackages);
+                      }}
+                      min={1}
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={5}>
+                  <Form.Item label="Alto" required>
+                    <InputNumber
+                      value={pkg.height}
+                      onChange={(value) => {
+                        const updatedPackages = [...packages];
+                        updatedPackages[index].height = value;
+                        setPackages(updatedPackages);
+                      }}
+                      min={1}
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={5}>
+                  <Form.Item label="Ancho" required>
+                    <InputNumber
+                      value={pkg.width}
+                      onChange={(value) => {
+                        const updatedPackages = [...packages];
+                        updatedPackages[index].width = value;
+                        setPackages(updatedPackages);
+                      }}
+                      min={1}
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={9}>
+                  <Form.Item label="Contenido" required>
+                    <Input
+                      value={pkg.content}
+                      onChange={(e) => {
+                        const updatedPackages = [...packages];
+                        updatedPackages[index].content = e.target.value;
+                        setPackages(updatedPackages);
+                      }}
+                      placeholder="Contenido"
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Button danger onClick={() => removePackage(index)} style={{ marginTop: "8px" }}>
+                Eliminar Paquete
+              </Button>
+            </div>
+          ))}
+          <Button type="dashed" onClick={addPackage} style={{ width: "100%" }}>
+            Añadir Paquete
+          </Button>
               </Form.Item>
 
               <Form.Item>
